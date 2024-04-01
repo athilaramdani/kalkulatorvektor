@@ -12,20 +12,20 @@ func main() {
 	version()
 	var (
 		menuInput int
-		vektor1, vektor2 vektor
+		vektor1, vektor2,vektor3 vektor
 		dimensir2 bool = false
 	)
 	fmt.Println("")
 	loop1:
 		for {
-		
-			menu(vektor1,vektor2,dimensir2 )
+			menu(vektor1,vektor2,vektor3, dimensir2 )
 			fmt.Print("Pilih apa? ")
 			fmt.Scan(&menuInput)
 			switch menuInput {
 			case 1:
 				vektor1 = buatvektorr2()
 				vektor2 = buatvektorr2()
+				vektor3 = buatvektorr2()
 				fmt.Print("apakah 2 dimensi? (y,n): " )
 				var pastikan string
 				fmt.Scan(&pastikan)
@@ -55,6 +55,8 @@ func main() {
 				fmt.Println(javektor(vektor1,vektor2,dimensir2))
 			case 8:
 				fmt.Println("ortogonality :", ortho(vektor1,vektor2,dimensir2))
+			case 9:
+				Parallelogram(vektor1,vektor2,vektor3)
 			default:
 				break loop1
 			}
@@ -80,12 +82,12 @@ func color(colorStr string) func(...interface{}) string {
 	}
 }
 
-func menu(vektor1,vektor2 vektor, dimensir2 bool) {
+func menu(vektor1,vektor2, vektor3 vektor, dimensir2 bool) {
 	fmt.Println("--------------------------------")
 	if dimensir2 {
-		fmt.Println("vektor a:", vektor1.x,vektor1.y,"vektor b:", vektor2.x,vektor2.y)
+		fmt.Println("vektor a:", vektor1.x,vektor1.y,"vektor b:", vektor2.x,vektor2.y,"vektor c:", vektor3.x,vektor3.y)
 	} else {
-		fmt.Println("vektor a:", vektor1.x,vektor1.y,vektor1.z,"vektor b:", vektor2.x,vektor2.y,vektor1.z)
+		fmt.Println("vektor a:", vektor1.x,vektor1.y,vektor1.z,"vektor b:", vektor2.x,vektor2.y,vektor2.z,"vektor c:", vektor3.x,vektor3.y,vektor3.z)
 	}
 	fmt.Println("1. Isivektor (WAJIB BANGET ISI)")
 	fmt.Println("2. Penjumlahan")
@@ -95,6 +97,7 @@ func menu(vektor1,vektor2 vektor, dimensir2 bool) {
 	fmt.Println("6. norm vektor ||v||")
 	fmt.Println("7. jarak antar 2 vektor")
 	fmt.Println("8. cek ortogonal")
+	fmt.Println("9. area Parallelogram")
 	fmt.Println("--------------------------------")
 }
 
@@ -168,4 +171,35 @@ func ortho(v1, v2 vektor, dimensir2 bool) bool {
 		return 0 == v1.x*v2.x + v1.y*v2.y  + v1.z*v2.z
 
 	}
+}
+
+func titikakhir(v1,v2 vektor) vektor {
+	var v vektor
+	v.x = v2.x - v1.x
+	v.y = v2.y - v1.y
+	v.z = v2.z - v1.z
+	return v
+}
+
+func crossproduct(ab,ac vektor) vektor {
+	var c vektor
+	c.x = (ab.y * ac.z - ac.y * ab.z)
+	c.y = (ab.x * ac.z - ac.x * ab.z)
+	c.z = (ab.x * ac.y - ac.x * ab.y)
+	return c
+}
+
+func Parallelogram(v1,v2,v3 vektor,) {
+	var ab, ac,c vektor
+	var luas,sluas float64
+	
+	ab = titikakhir(v1,v2)
+	fmt.Print("ab = (", ab.x,ab.y,ab.z,")\n")
+	ac = titikakhir(v1,v3)
+	fmt.Print("ac = (", ac.x,ac.y,ac.z,")\n")
+	c = crossproduct(ab,ac)
+	fmt.Print("c = ", c.x,"i - ", c.y,"j + ", c.z,"k \n")
+	sluas = math.Pow(c.x,2) + math.Pow(c.y,2) + math.Pow(c.z,2)
+	luas = 0.5 * math.Sqrt(sluas)
+	fmt.Print("Luas = 1/2 √", sluas, " = ", luas,"\n")
 }
