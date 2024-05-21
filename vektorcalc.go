@@ -22,6 +22,7 @@ type vektor struct {
 
 type tabVektor [NMAX]vektor
 
+var tVektor, tDimensi, tNorm, tNormAkar bool
 /*
 Deskripsi:
 Aplikasi ini digunakan untuk melakukan berbagai operasi matematika pada vektor. Input vector diantaranya titik dan dimensi. Pengguna dapat dengan mudah melakukan perhitungan vektor, seperti penjumlahan, pengurangan, perkalian dengan skalar, produk dan titik, serta operasi hitung lainnya.
@@ -44,7 +45,7 @@ func randomVektorData(arrV *tabVektor, n *int, jv, mind, maxd, mint, maxt int) {
 	max = *n
 	rand.Seed(time.Now().UnixNano())
 	for i = *n; i < jv+max; i++ {
-		arrV[i].dimensi = rand.Intn(maxd-mind+1) + mind
+		arrV[i].dimensi = rand.Intn(maxd-mind+1) + mind //melakukan generate dimensi dari rentangnya
 		for j = 0; j < arrV[i].dimensi; j++ {
 			arrV[i].titik[j] = float64(rand.Intn(maxt-mint+1) + mint)
 		}
@@ -53,12 +54,13 @@ func randomVektorData(arrV *tabVektor, n *int, jv, mind, maxd, mint, maxt int) {
 }
 
 func main() {
-	clearline()
+	clearline() //membersikan cmd
 	var sampah string
 	var arrVektor tabVektor
 	var v vektor
 	var stop, orthoValid bool
 	var inputMenu, nVektor, changeInput int
+	tVektor, tDimensi, tNorm, tNormAkar = true,true,true,false
 	nVektor = 0
 	if sampah == "tes" {
 		sampah = ""
@@ -66,6 +68,7 @@ func main() {
 	randomVektorData(&arrVektor, &nVektor, 5, 1, 10, 0, 10)
 	generateNorm(&arrVektor, nVektor)
 	for !stop {
+		clearline()
 		start()
 		generateNorm(&arrVektor, nVektor)
 		tampilkanDataVektor(arrVektor, nVektor)
@@ -76,7 +79,7 @@ func main() {
 
 		// menu input
 		if inputMenu == 1 {
-			for inputMenu != 4 {
+			for inputMenu != 8 {
 				generateNorm(&arrVektor, nVektor)
 				inputMenu = 0
 				tampilkanDataVektor(arrVektor, nVektor)
@@ -91,7 +94,7 @@ func main() {
 				if inputMenu == 1 {
 					isivektor(&arrVektor, &nVektor)
 
-					// perubah data
+				// perubah data
 				} else if inputMenu == 2 {
 					if nVektor > 0 {
 						fmt.Print("Vektor Mana yang mau diganti? ")
@@ -99,7 +102,8 @@ func main() {
 						changeInput = changeInput - 1
 						changeVektor(&arrVektor, changeInput)
 					}
-					//delete
+
+				//delete
 				} else if inputMenu == 3 {
 					clearline()
 					tampilkanDataVektor(arrVektor, nVektor)
@@ -116,7 +120,7 @@ func main() {
 						time.Sleep(1 * time.Second)
 					}
 	
-					// sort
+				// sort
 				} else if inputMenu == 4 {
 					clearline()
 					tampilkanDataVektor(arrVektor, nVektor)
@@ -125,7 +129,7 @@ func main() {
 					fmt.Scan(&inputMenu)
 					sort(&arrVektor, nVektor, inputMenu)
 
-					// search
+				// search
 				} else if inputMenu == 5 {
 					clearline()
 					tampilkanDataVektor(arrVektor, nVektor)
@@ -133,22 +137,36 @@ func main() {
 					fmt.Print("Pilih Opsi yang ingin di search: ")
 					fmt.Scan(&inputMenu)
 					search(arrVektor, nVektor, inputMenu)
-					// reset
+
+				// reset
 				} else if inputMenu == 6 {
 					resetVektor(&arrVektor, &nVektor)
 
-					//generate random
+				//generate random
 				} else if inputMenu == 7 {
 					generateRandomVektor(&arrVektor, &nVektor)
-				} else if inputMenu == 8 {
-					clearline()
-					break
 				}
 				clearline()
 			}
-			// menu Penjumlahan Start
+		// menu Visual Data
 		} else if inputMenu == 2 {
-
+			for inputMenu != 5 {
+				clearline()
+				tampilkanDataVektor(arrVektor, nVektor)
+				menuEditVisualData()
+				fmt.Print("Pilih Opsi Visual yang ingin diubah: ")
+				fmt.Scan(&inputMenu)
+				if inputMenu == 1 {
+					tVektor = !(tVektor)
+				} else if inputMenu == 2 {
+					tDimensi = !(tDimensi)
+				} else if inputMenu == 3 {
+					tNorm = !(tNorm)
+				} else if inputMenu == 4 {
+					tNormAkar = !(tNormAkar)
+				}
+			}
+		// menu Penjumlahan Start
 		} else if inputMenu == 3 {
 			if nVektor > 0 {
 				v = penjumlahanVektor(arrVektor, nVektor)
@@ -835,6 +853,32 @@ func menuSearch() {
 	colorText("3. Search Norm", 2, true)
 }
 
+func menuEditVisualData() {
+	colorText("========== MENU EDIT VISUAL DATA =========", 3, true)
+	if tVektor {
+		colorText("1. VEKTOR ON", 1, true)
+	} else {
+		colorText("1. VEKTOR OFF", 0, true)
+	}
+	if tDimensi {
+		colorText("2. DIMENSI ON", 1, true)
+	} else {
+		colorText("2. DIMENSI OFF", 0, true)
+	}
+	if tNorm {
+		colorText("3. NORM ON", 1, true)
+	} else {
+		colorText("3. NORM OFF", 0, true)
+	}
+	if tNormAkar {
+		colorText("4. NORM (SEBELUM AKAR)", 1, true)
+	} else {
+		colorText("4. NORM (SEBELUM AKAR)", 0, true)
+	}
+	colorText("5. Exit", 4, true)
+	
+}
+
 func colorText(text string, color int, line bool) {
 	/*I.S. terdefinisi text sebagai string dan color sebagai warna
 	F.S. Output dari string dengan warnanya*/
@@ -882,11 +926,25 @@ func tampilkanDataVektor(arrV tabVektor, n int) {
 		colorText("data Vektor: ", 5, true)
 	}
 	for i = 0; i < n; i++ {
-		fmt.Printf("%d. \033[0;37m( ", i+1)
-		for j = 0; j < arrV[i].dimensi; j++ {
-			fmt.Print(arrV[i].titik[j], " ")
+		fmt.Printf("%d. \033[0;37m", i+1)
+		if tVektor {
+			fmt.Print("( ")
+			for j = 0; j < arrV[i].dimensi; j++ {
+				fmt.Print(arrV[i].titik[j], " ")
+			}
+			fmt.Print(") ")
 		}
-		fmt.Printf(") dimension: %d , norm/panjang: %0.2f\n\033[0m", arrV[i].dimensi, arrV[i].norm)
+		if tDimensi {
+			fmt.Printf("dimension: %d ",arrV[i].dimensi)
+		}
+		if tNorm {
+			if tNormAkar {
+				fmt.Printf("norm/panjang: √%d",int(jumlahKuadratVektor(arrV[i])))
+			} else {
+				fmt.Printf("norm/panjang: %0.2f",arrV[i].norm)
+			}
+		}
+		fmt.Print("\n\033[0m")
 	}
 }
 
