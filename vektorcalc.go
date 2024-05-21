@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"time"
+	"runtime"
 )
 
 const NMAX int = 1024
@@ -949,7 +950,20 @@ func tampilkanDataVektor(arrV tabVektor, n int) {
 }
 
 func clearline() {
-	cmd := exec.Command("cmd", "/c", "cls")
-	cmd.Stdout = os.Stdout
-	cmd.Run()
+    var cmd *exec.Cmd
+
+    // Menentukan perintah untuk membersihkan layar berdasarkan sistem operasi
+    if runtime.GOOS == "windows" {
+        cmd = exec.Command("cmd", "/c", "cls")
+    } else {
+        cmd = exec.Command("clear")
+    }
+
+    // Mengarahkan output ke os.Stdout
+    cmd.Stdout = os.Stdout
+
+    // Menjalankan perintah
+    if err := cmd.Run(); err != nil {
+        fmt.Println("Failed to clear the screen:", err)
+    }
 }
