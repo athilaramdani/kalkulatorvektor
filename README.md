@@ -14,7 +14,8 @@ g.Pengguna bisa melakukan operasi hitung jika dimensi pada vektor tersebut sama,
 
 ## Version Info
 
-0.9
+1.0
+- sort is made into 2 parts, including selection sort and insertion sort.
 
 make usefulll!!!
 
