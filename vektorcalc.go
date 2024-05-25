@@ -236,9 +236,9 @@ func main() {
 	}
 }
 
-func search(arrV tabVektor, n, x int) {
+func search(arrV tabVektor, n, x int) { //hanya sequential search, binary search tidak dipakai
 	var value,i,j int
-	var valid bool
+	var adaTitikDiArray bool
 	var sampah string
 	if x == 1 {
 		fmt.Print("Masukkan nilai titik yang dicari: ")
@@ -247,13 +247,13 @@ func search(arrV tabVektor, n, x int) {
 			fmt.Printf("\033[0;37mdata Vektor yang mengandung nilai titik \033[0;33m%d\033[0m: \n", value)
 		}
 		for i = 0; i < n; i++ {
-			valid = false
+			adaTitikDiArray = false
 			j = 0
-			for !valid && j < arrV[i].dimensi {
-				valid = arrV[i].titik[j] == float64(value)
+			for !adaTitikDiArray && j < arrV[i].dimensi {
+				adaTitikDiArray = arrV[i].titik[j] == float64(value)
 				j++
 			}
-			if valid {
+			if adaTitikDiArray {
 				fmt.Printf("%d. \033[0;37m( ", i+1)
 		
 				for j = 0; j < arrV[i].dimensi; j++ {
@@ -273,19 +273,13 @@ func search(arrV tabVektor, n, x int) {
 			fmt.Printf("\033[0;37mdata Vektor yang mengandung nilai Dimensi \033[0;33m%d\033[0m: \n", value)
 		}
 		for i = 0; i < n; i++ {
-			valid = false
-			j = 0
-			for !valid && j < arrV[i].dimensi {
-				valid = arrV[i].dimensi == value
-				j++
-			}
-			if valid {
+			if arrV[i].dimensi == value {
 				fmt.Printf("%d. \033[0;37m( ", i+1)
 		
 				for j = 0; j < arrV[i].dimensi; j++ {
 					fmt.Printf("%v ",arrV[i].titik[j])
 				}
-				fmt.Printf(") dimension: \033[0;33m%d033[0;37m, norm/panjang: %0.2f\n\033[0m", arrV[i].dimensi, arrV[i].norm)
+				fmt.Printf(") dimension: \033[0;33m%d\033[0;37m, norm/panjang: %0.2f\n\033[0m", arrV[i].dimensi, arrV[i].norm)
 			}
 		}
 	} else if x == 3 {
@@ -295,13 +289,7 @@ func search(arrV tabVektor, n, x int) {
 			fmt.Printf("\033[0;37mdata Vektor yang mengandung nilai Norm \033[0;33m%d\033[0m: \n", value)
 		}
 		for i = 0; i < n; i++ {
-			valid = false
-			j = 0
-			for !valid && j < arrV[i].dimensi {
-				valid = arrV[i].norm >= float64(value) && arrV[i].norm <= float64(value) + 0.9999
-				j++
-			}
-			if valid {
+			if arrV[i].norm >= float64(value) && arrV[i].norm <= float64(value) + 0.9999 {
 				fmt.Printf("%d. \033[0;37m( ", i+1)
 		
 				for j = 0; j < arrV[i].dimensi; j++ {
@@ -326,85 +314,53 @@ func deleteVektor(arrV *tabVektor, n *int, x int) {
 }
 
 func sort(arrV *tabVektor, n, x int) {
-    var opsi, i, idx int
+    var opsi, i,j, idx int
+	var temp vektor
     fmt.Println("1. descending (Terurut Terbesar ke Terkecil)")
     fmt.Println("2. ascending (Terurut Terkecil ke Terbesar)")
     fmt.Print("Pilih Opsi: ")
     fmt.Scan(&opsi)
-    n = n - 1
-    if x == 1 { // Sort by dimensi
-        if opsi == 1 {
-            // Sort descending by dimensi
-            for i = 0; i <= n; i++ {
-                idx = findMinDimensi(*arrV, n-i)
-                swap(arrV, idx, n-i)
-            }
-        } else if opsi == 2 {
-            // Sort ascending by dimensi
-            for i = 0; i <= n; i++ {
-                idx = findMaxDimensi(*arrV, n-i)
-                swap(arrV, idx, n-i)
-            }
-        }
-    } else if x == 2 { // Sort by norm
-        if opsi == 1 {
-            // Sort descending by norm
-            for i = 0; i <= n; i++ {
-                idx = findMinNorm(*arrV, n-i)
-                swap(arrV, idx, n-i)
-            }
-        } else if opsi == 2 {
-            // Sort ascending by norm
-            for i = 0; i <= n; i++ {
-                idx = findMaxNorm(*arrV, n-i)
-                swap(arrV, idx, n-i)
-            }
-        }
-    }
-}
+    if x == 1 { // Sort by dimensi selection sort
+		i = 0
+		for i < n - 1 {
+			idx = i
+			j = i + 1
+			for j < n {
+				if opsi == 1 { // descending
+					if arrV[j].dimensi > arrV[idx].dimensi {
+						idx = j
+					}
+				} else if opsi == 2 { //ascending
+					if arrV[j].dimensi < arrV[idx].dimensi {
+						idx = j
+					}
+				}
+				j = j + 1
+			}
+			swap(arrV, idx, i)
+			i = i + 1
+		}
+	} else if x == 2 { //sort by norm insertion sort
+		i = 1
+		for i < n {
+			j = i
+			temp = arrV[i]
+			if opsi == 1 { // descending
+				for j > 0 && arrV[j-1].norm > temp.norm {
+					arrV[j] = arrV[j-1]
+					j = j - 1
+				}
+			} else if opsi == 2 { //ascending
+				for j > 0 && arrV[j-1].norm < temp.norm {
+					arrV[j] = arrV[j-1]
+					j = j - 1
+				}
+			}
+			arrV[j] = temp
+			i = i + 1
 
-func findMaxDimensi(arrV tabVektor, end int) int {
-    var imax int
-    imax = 0
-    for i := 1; i <= end; i++ { // <= end to include the end element
-        if arrV[i].dimensi > arrV[imax].dimensi {
-            imax = i
-        }
-    }
-    return imax
-}
-
-func findMinDimensi(arrV tabVektor, end int) int {
-    var imin int
-    imin = 0
-    for i := 1; i <= end; i++ { // <= end to include the end element
-        if arrV[i].dimensi < arrV[imin].dimensi {
-            imin = i
-        }
-    }
-    return imin
-}
-
-func findMaxNorm(arrV tabVektor, end int) int {
-    var imax int
-    imax = 0
-    for i := 1; i <= end; i++ { // <= end to include the end element
-        if arrV[i].norm > arrV[imax].norm {
-            imax = i
-        }
-    }
-    return imax
-}
-
-func findMinNorm(arrV tabVektor, end int) int {
-    var imin int
-    imin = 0
-    for i := 1; i <= end; i++ { // <= end to include the end element
-        if arrV[i].norm < arrV[imin].norm {
-            imin = i
-        }
-    }
-    return imin
+		}
+	}
 }
 
 func swap(arrV *tabVektor, idx1, idx2 int) {
